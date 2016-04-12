@@ -30,6 +30,7 @@ def extract_body(response):
 
 class ResponseOkTestCase(unittest.TestCase):
     """unit tests for the response_ok method in our server
+
     Becase this is a unit test case, it does not require the server to be
     running.
     """
@@ -278,12 +279,14 @@ class ResolveURITestCase(unittest.TestCase):
 
 class HTTPServerFunctionalTestCase(unittest.TestCase):
     """functional tests of the HTTP Server
+
     This test case interacts with the http server, and as such requires it to
     be running in order for the tests to pass
     """
 
     def send_message(self, message, use_bytes=False):
         """Attempt to send a message using the client and the test buffer
+
         In case of a socket error, fail and report the problem
         """
         response = ''            
@@ -372,6 +375,7 @@ class HTTPServerFunctionalTestCase(unittest.TestCase):
 
     def test_webroot_image_uris(self):
         """verify that image uris are properly served
+
         requires using a client that does not attempt to decode the response
         body
         """
