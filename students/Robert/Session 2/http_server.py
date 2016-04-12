@@ -82,13 +82,17 @@ def resolve_uri(uri):
     # TODO: Raise a NameError if the requested content is not present
     # under webroot.
     link = "webroot"+ uri
+    cont = ""
+    content = ""
+    mime_type = ""
+    mimetype = ""
     try:  
     # os.path.exists(link)
         if os.path.isfile(link) == False:
             # TODO: Handle content to list the files in the directory
             dirs = os.listdir(link)
             for x in dirs:
-                cont +=  x + ","
+                cont +=  x + " ,"
             content = b"{}".format(cont)    
             mime_type = b"text/plain"
         else:
