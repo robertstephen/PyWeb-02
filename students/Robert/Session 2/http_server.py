@@ -86,12 +86,12 @@ def resolve_uri(uri):
     try:
     # try if it's a file
         if os.path.isfile(link) == False:
-            content = ",".join(os.listdir(location)).encode('utf8') 
+            content = ",".join(os.listdir(link)).encode('utf8') 
             mime_type = b"text/plain"
         else:
     # open file if it's a file
             with open(link, 'rb') as f:
-                contents = f.read()
+                content = f.read()
                 f.close()
     # raise special case of python files
             if uri.endswith(".py"):
