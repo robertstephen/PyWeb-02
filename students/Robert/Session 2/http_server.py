@@ -22,9 +22,9 @@ def response_ok(body=b"this is a pretty minimal response", mimetype=b"text/plain
     # and mimetype.
     resp = []
     resp.append(b"HTTP/1.1 200 OK")
-    resp.append(b"Content-Type: {}".format(mimetype))
+    resp.append(b"Content-Type: " + mimetype)
     resp.append(b"")
-    resp.append(b"{}".format(body))
+    resp.append(body)
     return b"\r\n".join(resp)
 
 
@@ -45,10 +45,10 @@ def response_not_found():
     # the correct number (by changing "405") and also the
     # correct statement (by changing "Method Not Allowed").
     resp = []
-    resp.append(b"HTTP/1.1 404 Not Found")
-    resp.append(b"")
-    # resp.append(b"You’ve asked for something that doesn’t exist")
-    return b"\r\n".join(resp).encode('utf8')
+    resp.append("HTTP/1.1 404 Not Found")
+    resp.append("")
+    # resp.append("You’ve asked for something that doesn’t exist")
+    return "\r\n".join(resp).encode('utf8')
 
 
 def parse_request(request):
@@ -78,42 +78,32 @@ def resolve_uri(uri):
                              b"text/plain")
         resolve_uri('/a_page_that_doesnt_exist.html') -> Raises a NameError
     """
-    # TODO: Raise a NameError if the requested content is not present
-    # under webroot.
-    link = "webroot"+ uri
-    cont = ""
     content = ""
     mime_type = ""
-    mimetype = ""
-    try:  
-    # os.path.exists(link)
+    # get the path
+    link = os.path.dirname(os.path.realpath(__file__)) + "/webroot" + uri
+    # try open the link
+    try:
+    # try if it's a file
         if os.path.isfile(link) == False:
-            # TODO: Handle content to list the files in the directory
-            dirs = os.listdir(link)
-            for x in dirs:
-                cont +=  x + " ,"
-            content = b"{}".format(cont)    
+            content = ",".join(os.listdir(location)).encode('utf8') 
             mime_type = b"text/plain"
         else:
-            # TODO: with read the files 
-            # content = 
-            with open(link,'rb') as f:
-                content = b"{}".format(f.read())
+    # open file if it's a file
+            with open(link, 'rb') as f:
+                contents = f.read()
+                f.close()
+    # raise special case of python files
             if uri.endswith(".py"):
                 mime_type = b"text/x-python"
             else:
-                mimetype = mimetypes.guess_type(link)[0]
-                mime_type = b"{}".format(mimetype)    
+                mime_type = mimetypes.guess_type(link)[0].encode('utf8')
+    # raise name error if can't open the link
     except IOError:
         raise NameError
-    # TODO: Fill content with the appropriate content, given the URI
-    # content = b"not implemented"
-    # ??? How to get the uri content?   
-        # content = b"{}".format(uri)           
-    # TODO: Fill mime_type with the appropriate mime_type, given the URI
-    # See the assignment instructions with respect to mapping mime types.
-    # mime_type = b"not implemented"
+    # return the values of content and mime_type
     return content, mime_type
+
 
 def server(log_buffer=sys.stderr):
     address = ('127.0.0.1', 35000)
