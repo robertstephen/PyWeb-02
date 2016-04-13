@@ -59,22 +59,61 @@ def parse_request(request):
     return uri
 
 def resolve_uri(uri):
-    """This method should return appropriate content and a mime type"""    
-
-    location = os.path.dirname(os.path.realpath(__file__)) + "/webroot" + uri
-
-    if os.path.isdir(location):
-        return "\r\n".join(os.listdir(location)).encode('utf8'), b"text/plain"
-
-    elif os.path.isfile(location):
-        with open(location, 'rb') as file:
-            contents = file.read()
-            file.close()
-
-        return contents, mimetypes.MimeTypes().guess_type(location)[0].encode('utf8')
-
-    else:
-        raise NameError 
+    """
+    This method should return appropriate content and a mime type.
+    If the requested URI is a directory, then the content should be a
+    plain-text listing of the contents with mimetype `text/plain`.
+    If the URI is a file, it should return the contents of that file
+    and its correct mimetype.
+    If the URI does not map to a real location, it should raise an
+    exception that the server can catch to return a 404 response.
+    Ex:
+        resolve_uri('/a_web_page.html') -> (b"<html><h1>North Carolina...",
+                                            b"text/html")
+        )
+        resolve_uri('/sample_1.png') -> (b"A12BCF...",  # contents of sample_1.png
+                                         b"image/png")
+        )
+        resolve_uri('/') -> (b"images/, a_web_page.html, make_type.py,...",
+                             b"text/plain")
+        resolve_uri('/a_page_that_doesnt_exist.html') -> Raises a NameError
+    """
+    # TODO: Raise a NameError if the requested content is not present
+    # under webroot.
+    link = "webroot"+ uri
+    cont = ""
+    content = ""
+    mime_type = ""
+    mimetype = ""
+    try:  
+    # os.path.exists(link)
+        if os.path.isfile(link) == False:
+            # TODO: Handle content to list the files in the directory
+            dirs = os.listdir(link)
+            for x in dirs:
+                cont +=  x + " ,"
+            content = b"{}".format(cont)    
+            mime_type = b"text/plain"
+        else:
+            # TODO: with read the files 
+            # content = 
+            with open(link,'rb') as f:
+                content = b"{}".format(f.read())
+            if uri.endswith(".py"):
+                mime_type = b"text/x-python"
+            else:
+                mimetype = mimetypes.guess_type(link)[0]
+                mime_type = b"{}".format(mimetype)    
+    except IOError:
+        raise NameError
+    # TODO: Fill content with the appropriate content, given the URI
+    # content = b"not implemented"
+    # ??? How to get the uri content?   
+        # content = b"{}".format(uri)           
+    # TODO: Fill mime_type with the appropriate mime_type, given the URI
+    # See the assignment instructions with respect to mapping mime types.
+    # mime_type = b"not implemented"
+    return content, mime_type
 
 def server(log_buffer=sys.stderr):
     address = ('127.0.0.1', 35000)
